@@ -23,34 +23,38 @@ function Title(props) {
   );
 }
 
-//function HomePage() {
-//    return (
-//      <div>
-//          <GlobalStyle/>
-//          <Title tag="h2">Projeto de Chat</Title>
-//          <h2>Entre com seu Github</h2>
-//      </div>
-//  );}
-//
-//  export default HomePage
+
 
 
 
 export default function PaginaInicial() {
-  //const username = "AndersonDotore";
-  const [username, setUsername] = React.useState('AndersonDotore');
-  const roteamento = useRouter();
+  const [github, setGithub] = React.useState("");
+  const [username, setUsername] = React.useState("");
+  const root = useRouter();
+  const image = "https://m.media-amazon.com/images/I/71DTQQqJfQL._AC_SY450_.jpg";
+
+  React.useEffect(() => {
+    fetch(`https://api.github.com/users/${username}`)
+      .then((response) => {
+        return response.json();
+      })
+      .then((result) => {
+        setGithub(result);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  }, [username]);
 
   return (
-    <>    
+    <>
       <Box
         styleSheet={{
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: appConfig.theme.colors.primary[300],
-          backgroundImage:
-            "url(https://images.hdqwalls.com/wallpapers/star-wars-4th-may-kt.jpg)",
+          backgroundColor: appConfig.theme.colors.neutrals["300"],
+          backgroundImage: "url(https://images.hdqwalls.com/wallpapers/star-wars-4th-may-kt.jpg)",
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
           backgroundBlendMode: "multiply",
@@ -67,21 +71,25 @@ export default function PaginaInicial() {
             },
             width: "100%",
             maxWidth: "700px",
-            borderRadius: "5px",
             padding: "32px",
             margin: "16px",
-            boxShadow: "0 2px 10px 0 rgb(0 0 0 / 20%)",
-            backgroundColor: appConfig.theme.colors.neutrals[700],
+            backgroundColor: "rgba(0, 0, 0, 0.63)",
+            border: "1px solid rgba(0, 0, 0, 0.88)",
+            borderColor: appConfig.theme.colors.neutrals[999],
+            borderRadius: "16px",
+            flex: 1,
+            minHeight: "240px",
+            boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+            backdropFilter: "blur(2.6px)",
+            webkitBackdropFilter: "blur(2.6px)",
           }}
         >
           {/* Formulário */}
           <Box
             as="form"
-            onSubmit={function (infoEvent){
-              infoEvent.preventDefault();
-              roteamento.push('chat');
-
-              //window.location.href = '/chat'; modo padrão sem ser com o next
+            onSubmit={function (event) {
+              event.preventDefault();
+              root.push(`/chat?username=${username}`);
             }}
             styleSheet={{
               display: "flex",
@@ -93,22 +101,24 @@ export default function PaginaInicial() {
               marginBottom: "32px",
             }}
           >
-            <Title tag="h2">Bem Vindo ao ForChat!</Title>
+            <Title tag="h2">Bem vindo ao Universo Star Wars! </Title>
             <Text
               variant="body3"
               styleSheet={{
                 marginBottom: "32px",
-                color: appConfig.theme.colors.neutrals[300],
+                color: appConfig.theme.colors.neutrals["050"],
+                fontWeight: "bold",
               }}
             >
               {appConfig.name}
             </Text>
-
             <TextField
+              required
+              placeholder="Informe seu usuário do Github"
               value={username}
-              onChange={function (event){
-                const name = event.target.value;
-                setUsername(name);
+              onChange={function (event) {
+                const valor = event.target.value;
+                setUsername(valor);
               }}
               fullWidth
               textFieldColors={{
@@ -142,12 +152,15 @@ export default function PaginaInicial() {
               alignItems: "center",
               maxWidth: "200px",
               padding: "16px",
-              backgroundColor: appConfig.theme.colors.neutrals[800],
-              border: "1px solid",
+              backgroundColor: "rgba(0, 0, 0, 0.23)",
+              border: "1px solid rgba(0, 0, 0, 0.88)",
               borderColor: appConfig.theme.colors.neutrals[999],
-              borderRadius: "10px",
+              borderRadius: "16px",
               flex: 1,
               minHeight: "240px",
+              boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+              backdropFilter: "blur(4.7px)",
+              webkitBackdropFilter: "blur(4.7px)",
             }}
           >
             <Image
@@ -155,7 +168,11 @@ export default function PaginaInicial() {
                 borderRadius: "50%",
                 marginBottom: "16px",
               }}
-              src={`https://github.com/${username}.png`}
+              src={
+                username.length > 2
+                  ? `https://github.com/${username}.png`
+                  : image
+              }
             />
             <Text
               variant="body4"
@@ -163,11 +180,51 @@ export default function PaginaInicial() {
                 color: appConfig.theme.colors.neutrals[200],
                 backgroundColor: appConfig.theme.colors.neutrals[900],
                 padding: "3px 10px",
-                borderRadius: "1000px",
+                borderRadius: "10px",
               }}
             >
-              {username}
+              {username.length > 2 ? (
+                <Text
+                  tag="a"
+                  href={`https://github.com/${username}`}
+                  target="_blank"
+                  styleSheet={{
+                    color: appConfig.theme.colors.neutrals[200],
+                    fontSize: "12px",
+                    textDecoration: "none",
+                    hover: {
+                      color: appConfig.theme.colors.primary[500],
+                    },
+                  }}
+                >
+                  {github.name}
+                </Text>
+              ) : (
+                "George Lucas"
+              )}
             </Text>
+              <Text
+                variant="body4"
+                styleSheet={{
+                  color: appConfig.theme.colors.neutrals["200"],
+                  padding: "3px 10px",
+                  borderRadius: "1000px",
+                  marginTop: "8px",
+                }}
+              >
+                {username.length > 2 ? github.location : ""}
+              </Text>
+              <Text
+                variant="body4"
+                styleSheet={{
+                  color: appConfig.theme.colors.neutrals["200"],
+                  padding: "3px 10px",
+                  borderRadius: "1000px",
+                  marginTop: "8px",
+                }}
+              >
+                {username.length > 2 ? `Followers: ${github.followers}`: ""}
+              </Text>
           </Box>
           {/* Photo Area */}
         </Box>
